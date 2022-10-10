@@ -51,17 +51,17 @@
         private float[,] ParseInput(string s)
         {
             var rows = s.Trim().Split(';');
-            int height = rows.Length;
-            int width = rows[0].Trim().Split(' ').Length;
-            float[,] matrix = new float[height, width];
+            var height = rows.Length;
+            var width = rows[0].Trim().Split(' ').Length;
+            var matrix = new float[height, width];
 
-            int row_index = 0;
+            var row_index = 0;
             foreach (string row in rows)
             {
                 string[] line = row.Trim().Split(' ');
                 if (line.Length != width)
                     throw new FormatException("Wrong input format.");
-                for (int i = 0; i < width; i++)
+                for (var i = 0; i < width; i++)
                 {
                     matrix[row_index, i] = float.Parse(line[i]);
                 }
@@ -78,7 +78,7 @@
 
         private Matrix GetRow(int index)
         {
-            float[,] row = new float[1, _width];
+            var row = new float[1, _width];
             for (int i = 0; i < _width; i++)
                 row[0, i] = matrix[index, i];
             return new Matrix(row);
@@ -94,15 +94,15 @@
 
         private Matrix GetColumn(int index)
         {
-            float[,] col = new float[_height, 1];
-            for (int i = 0; i < _height; i++)
+            var col = new float[_height, 1];
+            for (var i = 0; i < _height; i++)
                 col[i, 0] = matrix[i, index];
             return new Matrix(col);
         }
 
         private void SetColumn(Matrix col, int index)
         {
-            for (int i = 0; i < _height; i++)
+            for (var i = 0; i < _height; i++)
             {
                 matrix[i, index] = col[i, 0];
             }
@@ -111,7 +111,7 @@
         private void AddRows(int indexFrom, int indexTo, float multiplier = 1)
         {
             // add multiple of one row to another
-            Matrix sum = (multiplier * GetRow(indexFrom)) + GetRow(indexTo);
+            var sum = (multiplier * GetRow(indexFrom)) + GetRow(indexTo);
             SetRow(sum, indexTo);
         }
 
@@ -137,7 +137,7 @@
         public static Matrix IdentityMatrix(int rank)
         {
             var matrix = new Matrix(new float[rank, rank]);
-            for (int i = 0; i < rank; i++)
+            for (var i = 0; i < rank; i++)
                 matrix[i, i] = 1;
             return matrix;
         }
@@ -149,16 +149,16 @@
             Matrix m = Copy(A);
             Matrix inv = IdentityMatrix(A._height);
 
-            int pivotColumn = 0;
-            int pivotRow = 0;
+            var pivotColumn = 0;
+            var pivotRow = 0;
             float f;
             float d = 1;
 
             while (pivotColumn < m._width && pivotRow < m._height)
             {
-                int firstGoodPivotRow = int.MaxValue;
+                var firstGoodPivotRow = int.MaxValue;
 
-                for (int i = pivotRow; i < m._height; i++)
+                for (var i = pivotRow; i < m._height; i++)
                 {
                     if (m[i, pivotColumn] != 0)
                     {
@@ -466,7 +466,7 @@
         {
             if (_height != _width)
                 throw new Exception("A must be a square matrix.");
-            Matrix diag = new Matrix(_height, 1);
+            var diag = new Matrix(_height, 1);
             for (int i = 0; i < _height; i++)
                 diag[i, 0] = this[i, i];
             return diag;
@@ -476,8 +476,12 @@
         {
             // sets all values in matrix to zero
             for (int i = 0; i < _height; i++)
-                for (int j = 0; j < _width; j++)
+            {
+                for (int j = 0; j < _width; j++) 
+                { 
                     this[i, j] = 0;
+                }
+            }
         }
 
         /// <summary>
