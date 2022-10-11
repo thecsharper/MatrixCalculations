@@ -465,20 +465,26 @@
         public Matrix Diag()
         {
             if (_height != _width)
+            {
                 throw new Exception("A must be a square matrix.");
+            }
+
             var diag = new Matrix(_height, 1);
-            for (int i = 0; i < _height; i++)
+            for (var i = 0; i < _height; i++)
+            {
                 diag[i, 0] = this[i, i];
+            }
+
             return diag;
         }
 
         private void ZeroOut()
         {
             // sets all values in matrix to zero
-            for (int i = 0; i < _height; i++)
+            for (var i = 0; i < _height; i++)
             {
-                for (int j = 0; j < _width; j++) 
-                { 
+                for (var j = 0; j < _width; j++)
+                {
                     this[i, j] = 0;
                 }
             }
@@ -490,13 +496,14 @@
         public Matrix Transpose()
         {
             var AT = new float[_width, _height];
-            for (int i = 0; i < _height; i++)
+            for (var i = 0; i < _height; i++)
             {
-                for (int j = 0; j < _width; j++)
+                for (var j = 0; j < _width; j++)
                 {
                     AT[j, i] = this[i, j];
                 }
             }
+
             return new Matrix(AT);
         }
 
@@ -512,18 +519,26 @@
             // standard scalar (dot) product of two vectors
 
             if (a._height == 1)
+            {
                 a = a.Transpose();
+            }
 
             if (b._height == 1)
+            {
                 b = b.Transpose();
+            }
 
             if (a._height != b._height || a._width != 1 || b._width != 1)
+            {
                 throw new Exception("Cannot do scalar product.");
+            }
 
             float res = 0;
 
             for (int i = 0; i < a._height; i++)
+            {
                 res += a[i, 0] * b[i, 0];
+            }
 
             return res;
         }
