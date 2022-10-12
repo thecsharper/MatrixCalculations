@@ -60,7 +60,10 @@
             {
                 string[] line = row.Trim().Split(' ');
                 if (line.Length != width)
+                {
                     throw new FormatException("Wrong input format.");
+                }
+                    
                 for (var i = 0; i < width; i++)
                 {
                     matrix[row_index, i] = float.Parse(line[i]);
@@ -80,7 +83,10 @@
         {
             var row = new float[1, _width];
             for (int i = 0; i < _width; i++)
+            {
                 row[0, i] = matrix[index, i];
+            }
+                
             return new Matrix(row);
         }
 
@@ -138,7 +144,10 @@
         {
             var matrix = new Matrix(new float[rank, rank]);
             for (var i = 0; i < rank; i++)
+            {
                 matrix[i, i] = 1;
+            }
+                
             return matrix;
         }
 
@@ -189,7 +198,7 @@
                         if (det) d *= 1 / f;
                     }
 
-                    for (int i = 0; i < m._height; i++)
+                    for (var i = 0; i < m._height; i++)
                     {
                         if (!RREF && i <= pivotRow) continue;
                         if (RREF && i == pivotRow) continue;
@@ -198,7 +207,9 @@
                         m.AddRows(pivotRow, i, -f);
 
                         if (inverse)
+                        {
                             inv.AddRows(pivotRow, i, -f);
+                        }
                     }
 
                     pivotRow++;
@@ -207,12 +218,17 @@
             }
 
             if (inverse)
+            {
                 return inv;
+            }
 
             if (det)
             {
-                for (int i = 0; i < m._height; i++)
+                for (var i = 0; i < m._height; i++)
+                {
                     d *= m[i, i];
+                }
+                    
                 return new Matrix($"{d}");
             }
 
@@ -242,11 +258,14 @@
         private static bool IsZero(Matrix row)
         {
             // returns true if all values in the row are zero
-            for (int i = 0; i < row._width; i++)
+            for (var i = 0; i < row._width; i++)
             {
                 if (row[0, i] != 0)
+                {
                     return false;
+                }
             }
+
             return true;
         }
 
@@ -259,11 +278,12 @@
         {
             var m = Elimination(A);
 
-            for (int i = 0; i < m._height; i++)
+            for (var i = 0; i < m._height; i++)
             {
                 if (IsZero(m.GetRow(i)))
                     return i;
             }
+
             return m._height;
         }
 
@@ -275,7 +295,10 @@
         public static Matrix Inverse(Matrix A)
         {
             if (A._height != A._width || Rank(A) != A._height)
+            {
                 throw new Exception("Can only invert regular matrix.");
+            }
+
             return Elimination(A, true, true);
         }
 
@@ -287,9 +310,13 @@
         public static float Det(Matrix A)
         {
             if (A._height != A._width)
+            {
                 throw new Exception("Can only calculate determinant of a square matrix.");
-
-            else return Elimination(A, false, false, true)[0, 0];
+            }
+            else
+            {
+                return Elimination(A, false, false, true)[0, 0];
+            }
         }
 
         /// <summary>
@@ -301,7 +328,10 @@
         {
             float tr = 1;
             for (int i = 0; i < Math.Min(A._height, A._width); i++)
+            {
                 tr += A[i, i];
+            }
+
             return tr;
         }
 
@@ -314,13 +344,14 @@
         {
             // creates a copy of the matrix
             float[,] copy = new float[A._height, A._width];
-            for (int i = 0; i < A._height; i++)
+            for (var i = 0; i < A._height; i++)
             {
-                for (int j = 0; j < A._width; j++)
+                for (var j = 0; j < A._width; j++)
                 {
                     copy[i, j] = A[i, j];
                 }
             }
+
             return new Matrix(copy);
         }
 
@@ -362,14 +393,20 @@
         public static float[] ToArray(Matrix A)
         {
             if (A._height != 1 && A._width != 0)
+            {
                 throw new Exception("Cannot convert this Matrix to one-dimensional array.");
+            }
 
             if (A._width == 1)
+            {
                 A = A.Transpose();
+            }
 
             var array = new float[Math.Max(A._width, A._height)];
             for (int i = 0; i < A._height; i++)
+            {
                 array[i] = A[i, 0];
+            }
 
             return array;
         }
@@ -380,11 +417,12 @@
             Matrix next_guess = new Matrix(A._height, 1);
             guess = IdentityMatrix(A._height).GetColumn(0);
 
-            for (int i = 0; i < iter; i++)
+            for (var i = 0; i < iter; i++)
             {
                 next_guess = (1 / Norm(A * guess)) * (A * guess);
                 guess = next_guess;
             }
+
             return guess;
         }
 
@@ -392,7 +430,7 @@
         {
             // algorithm for computing eigenvalues
             Matrix A_next = new Matrix(A._height, A._width);
-            for (int i = 0; i < iter; i++)
+            for (var i = 0; i < iter; i++)
             {
                 var decomp = QR_Decomp(A);
                 var Q = decomp[0];
@@ -400,6 +438,7 @@
                 A_next = R * Q;
                 A = A_next;
             }
+
             return A_next;
         }
 
@@ -424,23 +463,28 @@
             // e_k = u_k / ||u_k||                                normalise
 
             if (Rank(A.Transpose()) != A._width)
+            {
                 throw new Exception("Columns of input matrix must be linearly independent.");
+            }
 
             var q = new Matrix(A._height, A._width);
 
             // fill up q with orthogonal basis
             var sum = new Matrix(A._height, 1);
-            for (int i = 0; i < A._width; i++)
+            for (var i = 0; i < A._width; i++)
             {
                 sum.ZeroOut();
-                for (int j = 0; j < i; j++)
+                for (var j = 0; j < i; j++)
+                {
                     sum += Proj(A.GetColumn(i), q.GetColumn(j));
+                }
+
                 var u = A.GetColumn(i) - sum;
                 q.SetColumn(u, i);
             }
 
             // normalise columns of q
-            for (int i = 0; i < A._width; i++)
+            for (var i = 0; i < A._width; i++)
             {
                 var u = q.GetColumn(i);
                 var e = (1 / Norm(u)) * u;
@@ -535,7 +579,7 @@
 
             float res = 0;
 
-            for (int i = 0; i < a._height; i++)
+            for (var i = 0; i < a._height; i++)
             {
                 res += a[i, 0] * b[i, 0];
             }
@@ -550,19 +594,24 @@
         /// <returns>String that represents the table of values in the matrix</returns>
         public override string ToString()
         {
-            string output = "";
+            var output = string.Empty;
             double temp;
-            for (int i = 0; i < _height; i++)
+            for (var i = 0; i < _height; i++)
             {
-                for (int j = 0; j < _width; j++)
+                for (var j = 0; j < _width; j++)
                 {
                     temp = Math.Round(matrix[i, j], 3);
                     if (temp == -0)
+                    {
                         temp = 0;
+                    }
+
                     output += temp.ToString() + " ";
                 }
+
                 output += "\n";
             }
+
             return output;
         }
 
@@ -572,16 +621,19 @@
         public static Matrix operator +(Matrix A, Matrix B)
         {
             if ((A._height != B._height) || (A._width != B._width))
+            {
                 throw new FormatException("Wrong matrix dimensions");
+            }
 
             var sum = new float[A._height, A._width];
-            for (int i = 0; i < A._height; i++)
+            for (var i = 0; i < A._height; i++)
             {
-                for (int j = 0; j < A._width; j++)
+                for (var j = 0; j < A._width; j++)
                 {
                     sum[i, j] = A[i, j] + B[i, j];
                 }
             }
+
             return new Matrix(sum);
         }
 
@@ -601,13 +653,14 @@
         public static Matrix operator *(float c, Matrix A)
         {
             var multiple = new float[A._height, A._width];
-            for (int i = 0; i < A._height; i++)
+            for (var i = 0; i < A._height; i++)
             {
-                for (int j = 0; j < A._width; j++)
+                for (var j = 0; j < A._width; j++)
                 {
                     multiple[i, j] = c * A[i, j];
                 }
             }
+
             return new Matrix(multiple);
         }
 
@@ -620,17 +673,20 @@
         public static Matrix operator *(Matrix A, Matrix B)
         {
             if (A._width != B._height)
+            {
                 throw new Exception("Wrong matrix dimensions.");
+            }
 
             var product = new float[A._height, B._width];
 
-            for (int i = 0; i < A._height; i++)
+            for (var i = 0; i < A._height; i++)
             {
-                for (int j = 0; j < B._width; j++)
+                for (var j = 0; j < B._width; j++)
                 {
                     product[i, j] = ScalarProduct(A.GetRow(i), B.GetColumn(j));
                 }
             }
+
             return new Matrix(product);
         }
     }
