@@ -2,7 +2,8 @@
 {
     public class Matrix
     {
-        private float[,] matrix { get; set; }
+        private float[,] MatrixData { get; set; }
+
         private readonly int _height;
         private readonly int _width;
 
@@ -12,7 +13,7 @@
         /// <param name="array">2-dimensional float array</param>
         public Matrix(float[,] array)
         {
-            matrix = array;
+            MatrixData = array;
             _height = array.GetLength(0);
             _width = array.GetLength(1);
         }
@@ -24,7 +25,7 @@
         /// <param name="width"></param>
         public Matrix(int height, int width)
         {
-            matrix = new float[height, width];
+            MatrixData = new float[height, width];
             _height = height;
             _width = width;
         }
@@ -43,12 +44,12 @@
         {
             // input is either a two-dimensional int array or a string
             // separated by semicolon, such as: " 1 2; 3 4; 5 6 "
-            matrix = ParseInput(s);
-            _height = matrix.GetLength(0);
-            _width = matrix.GetLength(1);
+            MatrixData = ParseInput(s);
+            _height = MatrixData.GetLength(0);
+            _width = MatrixData.GetLength(1);
         }
 
-        private float[,] ParseInput(string s)
+        private static float[,] ParseInput(string s)
         {
             var rows = s.Trim().Split(';');
             var height = rows.Length;
@@ -68,15 +69,17 @@
                 {
                     matrix[row_index, i] = float.Parse(line[i]);
                 }
+
                 row_index++;
             }
+
             return matrix;
         }
 
-        public float this[int row, int column]
+        private float this[int row, int column]
         {
-            get => matrix[row, column];
-            set => matrix[row, column] = value;
+            get => MatrixData[row, column];
+            set => MatrixData[row, column] = value;
         }
 
         private Matrix GetRow(int index)
@@ -84,7 +87,7 @@
             var row = new float[1, _width];
             for (int i = 0; i < _width; i++)
             {
-                row[0, i] = matrix[index, i];
+                row[0, i] = MatrixData[index, i];
             }
                 
             return new Matrix(row);
@@ -94,7 +97,7 @@
         {
             for (int i = 0; i < _width; i++)
             {
-                matrix[index, i] = row[0, i];
+                MatrixData[index, i] = row[0, i];
             }
         }
 
@@ -102,7 +105,7 @@
         {
             var col = new float[_height, 1];
             for (var i = 0; i < _height; i++)
-                col[i, 0] = matrix[i, index];
+                col[i, 0] = MatrixData[i, index];
             return new Matrix(col);
         }
 
@@ -110,7 +113,7 @@
         {
             for (var i = 0; i < _height; i++)
             {
-                matrix[i, index] = col[i, 0];
+                MatrixData[i, index] = col[i, 0];
             }
         }
 
@@ -177,8 +180,9 @@
                 }
 
                 if (firstGoodPivotRow == int.MaxValue)
+                {
                     pivotColumn++;
-
+                }
                 else
                 {
                     f = 1 / m[firstGoodPivotRow, pivotColumn];
@@ -413,8 +417,8 @@
 
         private static Matrix PowerIteration(Matrix A, int iter)
         {
-            Matrix guess = new Matrix(A._height, 1);
-            Matrix next_guess = new Matrix(A._height, 1);
+            var guess = new Matrix(A._height, 1);
+            var next_guess = new Matrix(A._height, 1);
             guess = IdentityMatrix(A._height).GetColumn(0);
 
             for (var i = 0; i < iter; i++)
@@ -429,7 +433,7 @@
         private static Matrix QR_Algorithm(Matrix A, int iter)
         {
             // algorithm for computing eigenvalues
-            Matrix A_next = new Matrix(A._height, A._width);
+            var A_next = new Matrix(A._height, A._width);
             for (var i = 0; i < iter; i++)
             {
                 var decomp = QR_Decomp(A);
@@ -445,8 +449,8 @@
         public static Matrix[] QR_Decomp(Matrix A)
         {
             // A = Q*R, s.t Q orthogonal and R upper triang.
-            Matrix Q = GramSchmidt(A);
-            Matrix R = Q.Transpose() * A;
+            var Q = GramSchmidt(A);
+            var R = Q.Transpose() * A;
             return new Matrix[2] { Q, R };
         }
 
@@ -600,7 +604,7 @@
             {
                 for (var j = 0; j < _width; j++)
                 {
-                    temp = Math.Round(matrix[i, j], 3);
+                    temp = Math.Round(MatrixData[i, j], 3);
                     if (temp == -0)
                     {
                         temp = 0;
